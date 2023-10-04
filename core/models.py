@@ -1,6 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
+
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='published')
 
 
 class Post(models.Model):
@@ -18,8 +24,14 @@ class Post(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
 
+    objects = models.Manager()
+    published = PublishedManager()
+
     class Meta:
         ordering = ("-publish",)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('core:post_detail', args=[self.slug])
