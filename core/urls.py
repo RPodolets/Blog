@@ -6,7 +6,8 @@ urlpatterns = [
     path("", PostListView.as_view(), name="post_list"),
     path("<slug:post>/", post_detail, name="post_detail"),
     path("/signup/", SignUpView.as_view(), name="signup"),
-    path("/comment/reply/", reply_view, name="reply")
+    path("/comment/reply/", reply_view, name="reply"),
+    path("tag/<slug:tag_slug>/", PostListView.as_view(), name='post_tag')
 ]
 
 app_name = "core"

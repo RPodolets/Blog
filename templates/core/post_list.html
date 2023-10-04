@@ -20,15 +20,16 @@
                 {{ post.title }}
               </a>
             </h2>
+
+            {% include "includes/tag_list.html" %}
+
             <div class="text-muted">
               <small>
                 Published {{ post.publish.date }} by <strong>{{ post.author }}</strong>
               </small>
             </div>
 
-
             <p class="card-text mb-auto py-2">{{ post.content|safe|striptags|truncatechars:100 }}</p>
-
 
             <div>
               <a href="{{ post.get_absolute_url }}" class="btn btn-primary btn-sm">Read more</a>

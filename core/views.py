@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
@@ -15,6 +14,12 @@ class PostListView(LoginRequiredMixin, generic.ListView):
     queryset = Post.published.all()
     paginate_by = 3
 
+    def get_queryset(self):
+        if tag := self.request.GET.get("tag_slug", ""):
+            self.queryset = self.queryset.filter(tags__in=[tag])
+
+        return self.queryset
+
 
 @login_required(login_url='/accounts/login/')
 def post_detail(request: HttpRequest, post: str) -> HttpResponse:
@@ -28,7 +33,6 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
-            # new_comment.user = get_user_model().objects.get(id=request.user.id)
             new_comment.user = Profile.objects.get(user__id=request.user.id)
             new_comment.post = post
             new_comment.save()

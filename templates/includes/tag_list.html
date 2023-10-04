@@ -1,0 +1,7 @@
+<p>
+  {% for tag in post.tags.all %}
+    <a href="{% url 'core:post_tag' tag.slug %}" class="link-light text-decoration-none badge bg-secondary">
+      {{ tag.name }}
+    </a>
+  {% endfor %}
+</p>
