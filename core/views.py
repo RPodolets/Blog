@@ -15,6 +15,9 @@ class PostListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 3
 
     def get_queryset(self):
+        if search := self.request.GET.get("search", ""):
+            self.queryset = self.queryset.filter(title__icontains=search)
+
         if tag := self.request.GET.get("tag_slug", ""):
             self.queryset = self.queryset.filter(tags__in=[tag])
 
