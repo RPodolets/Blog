@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
-from core.forms import CommentForm, SignUpForm
+from core.forms import CommentForm, SignUpForm, PostForm
 from core.models import Post, Comment, Profile
 
 
@@ -27,6 +27,9 @@ class PostListView(LoginRequiredMixin, generic.ListView):
 @login_required(login_url='/accounts/login/')
 def post_detail(request: HttpRequest, post: str) -> HttpResponse:
     post = get_object_or_404(Post, slug=post, status='published')
+
+    if post:
+        post.update_views()
 
     comments = post.comments.filter(active=True)
     comment_form = CommentForm()
@@ -53,6 +56,7 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
     )
 
 
+@login_required(login_url='/accounts/login/')
 def reply_view(request):
     if request.method == "POST":
         form = CommentForm(request.POST)
@@ -76,3 +80,25 @@ class SignUpView(generic.CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
+
+
+class PostCreateView(generic.CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = "core/post_form.html"
+    success_url = ""
+
+    def form_valid(self, form):
+        form.instance.author = Profile.objects.get(user__id=self.request.user.id)
+        return super().form_valid(form)
+
+
+class PostUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = "core/post_form.html"
+    success_url = ""
+
+
+class ProfileDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Profile

@@ -6,11 +6,12 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from taggit.managers import TaggableManager
+from django.template.defaultfilters import slugify
 
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status='published')
+        return super().get_queryset().filter(status="published")
 
 
 class Profile(models.Model):
@@ -36,12 +37,13 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique_for_date="publish")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="posts")
-    image = models.ImageField(upload_to='featured_image/%Y/%m/%d/')
+    image = models.ImageField(upload_to="featured_image/%Y/%m/%d/")
     content = RichTextUploadingField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     tags = TaggableManager()
+    views = models.IntegerField(default=0)
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
 
@@ -54,11 +56,20 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = slugify(self.title)
+        super(Post, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return reverse('core:post_detail', args=[self.slug])
+        return reverse("core:post_detail", args=[self.slug])
 
     def get_comments(self):
         return self.comments.filter(parent=None).filter(active=True)
+
+    def update_views(self, *args, **kwargs):
+        self.views = self.views + 1
+        super(Post, self).save(*args, **kwargs)
 
 
 class Comment(models.Model):

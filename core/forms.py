@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Comment
+from .models import Comment, Post
 
 
 class CommentForm(forms.ModelForm):
@@ -37,3 +37,14 @@ class PostSearchForm(forms.Form):
             }
         )
     )
+
+
+class PostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image'].required = False
+
+    class Meta:
+        model = Post
+        fields = ("title", "image", "content", "tags", "status")
+        # fields = "__all__"

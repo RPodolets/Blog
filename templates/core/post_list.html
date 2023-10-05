@@ -26,6 +26,7 @@
             <div class="text-muted">
               <small>
                 Published {{ post.publish.date }} by <strong>{{ post.author }}</strong>
+                <span>{{ post.views }} view{{ post.views|pluralize:",s" }}</span>
               </small>
             </div>
 
