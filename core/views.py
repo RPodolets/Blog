@@ -21,6 +21,9 @@ class PostListView(LoginRequiredMixin, generic.ListView):
         if tag := self.request.GET.get("tag_slug", ""):
             self.queryset = self.queryset.filter(tags__in=[tag])
 
+        if user_id := self.request.GET.get("pk", ""):
+            self.queryset = self.queryset.filter(user__profile__id=["pk"])
+
         return self.queryset
 
 

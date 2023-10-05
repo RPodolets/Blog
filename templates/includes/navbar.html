@@ -15,10 +15,10 @@
         </li>
       </ul>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {% if user.is_authenticated %}
+        {% if request.user.is_authenticated %}
           <li class="nav-item">
-            <a href="#"
-               class="nav-link text-black font-weight-bold">Hello: <strong>{{ user.get_username }}</strong>
+            <a href="{% url 'core:profile' user.profile.id %}"
+               class="nav-link text-black font-weight-bold">Hello: <strong>{{ request.user.get_username }}</strong>
             </a>
           </li>
           <li class="nav-item active">
