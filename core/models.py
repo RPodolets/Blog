@@ -65,7 +65,7 @@ class Post(models.Model):
         return reverse("core:post_detail", args=[self.slug])
 
     def get_comments(self):
-        return self.comments.filter(parent=None).filter(active=True)
+        return self.comments.filter(parent=None).filter(active=True).prefetch_related("user")
 
     def update_views(self, *args, **kwargs):
         self.views = self.views + 1
@@ -75,7 +75,6 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="comments")
-    email = models.EmailField()
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
     body = models.TextField()
 
@@ -90,4 +89,4 @@ class Comment(models.Model):
         return self.body
 
     def get_comments(self):
-        return Comment.objects.filter(parent=self).filter(active=True)
+        return Comment.objects.filter(parent=self).prefetch_related("profile").filter(active=True)
