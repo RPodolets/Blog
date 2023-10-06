@@ -13,7 +13,7 @@ from core.models import Post, Comment, Profile
 
 class PostListView(LoginRequiredMixin, generic.ListView):
     model = Post
-    queryset = Post.published.prefetch_related("tags").select_related("author", "author__user")
+    queryset = Post.published.all()
     paginate_by = 3
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -67,7 +67,11 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
             new_comment.post = post
             new_comment.save()
             return redirect(post.get_absolute_url() + "#" + str(new_comment.id))
-
+    
+    post_tags_ids = post.tags.values_list("id", flat=True)
+    similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count("tags")).order_by("-same_tags", "-publish")[:3]
+    
     return render(
         request,
         "core/post_detail.html",
@@ -75,7 +79,8 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
             "post": post,
             "comments": comments,
             "new_comment": new_comment,
-            "comment_form": comment_form
+            "comment_form": comment_form,
+            "similar_posts": similar_posts
         }
     )
 

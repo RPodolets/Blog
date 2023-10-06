@@ -11,7 +11,8 @@ from django.template.defaultfilters import slugify
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status="published")
+        queryset = super().get_queryset().filter(status="published")
+        return queryset.prefetch_related("tags").select_related("author", "author__user")
 
 
 class Profile(models.Model):
