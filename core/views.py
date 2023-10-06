@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -29,22 +29,28 @@ class PostListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self, *args, **kwargs):
+        if pk := self.kwargs.get("pk", ""):
+            self.queryset = Post.objects.filter(
+                author__id=pk).prefetch_related(
+                "tags").select_related(
+                "author", "author__user"
+            )
+
         if search := self.request.GET.get("title", ""):
             self.queryset = self.queryset.filter(title__icontains=search)
 
         if tag := self.kwargs.get("tag_slug", ""):
-            print(tag)
             self.queryset = self.queryset.filter(tags__name__in=[tag])
-
-        if pk := self.request.GET.get("pk", ""):
-            self.queryset = self.queryset.filter(user__profile__id=pk)
 
         return self.queryset
 
 
 @login_required(login_url='/accounts/login/')
 def post_detail(request: HttpRequest, post: str) -> HttpResponse:
-    post = get_object_or_404(Post, slug=post, status='published')
+    post = get_object_or_404(Post, slug=post)
+
+    if post.status == "draft" and post.author.id != request.user.profile.id:
+        raise Http404("Article not exists")
 
     if post:
         post.update_views()
@@ -81,8 +87,8 @@ def reply_view(request):
 
         if form.is_valid():
             post_id = request.POST.get('post_id')
-            parent_id = request.POST.get('parent')
             post_url = request.POST.get('post_url')
+            parent_id = request.POST.get('parent')
             reply = form.save(commit=False)
 
             reply.user = Profile.objects.get(user__id=request.user.id)
@@ -104,7 +110,7 @@ class PostCreateView(LoginRequiredMixin, generic.CreateView):
     model = Post
     form_class = PostForm
     template_name = "core/post_form.html"
-    success_url = ""
+    success_url = reverse_lazy("core:post_list")
 
     def form_valid(self, form):
         form.instance.author = Profile.objects.get(user__id=self.request.user.id)
@@ -116,6 +122,23 @@ class PostUpdateView(LoginRequiredMixin, generic.UpdateView):
     form_class = PostForm
     template_name = "core/post_form.html"
     success_url = ""
+
+    def get_object(self, queryset=None):
+        obj = super(PostUpdateView, self).get_object(queryset)
+        if obj.author.id != self.request.user.profile.id:
+            raise Http404("You don't own this object")
+        return obj
+
+
+class PostDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Post
+    success_url = reverse_lazy("core:post_list")
+
+    def get_object(self, queryset=None):
+        obj = super(PostDeleteView, self).get_object(queryset)
+        if obj.author.id != self.request.user.profile.id:
+            raise Http404("You don't own this object")
+        return obj
 
 
 class ProfileDetailView(LoginRequiredMixin, generic.DetailView):

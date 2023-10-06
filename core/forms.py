@@ -50,7 +50,12 @@ class PostForm(forms.ModelForm):
 
     def clean_title(self):
         title = self.cleaned_data['title']
+        queryset = Post.objects.filter(title=title)
 
-        if Post.objects.filter(title=title).exists():
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+
+        if queryset.exists():
             raise forms.ValidationError('A post with that title already exists.')
+
         return title

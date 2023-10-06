@@ -22,6 +22,16 @@
     </div>
   </article>
   {% include "includes/tag_list.html" %}
+
+  {% if user.id == post.author.user_id %}
+    <div class="d-flex d-row gap-3">
+      <a class="btn btn-outline-danger"
+         href="{% url 'core:post_delete' slug=post.slug %}">Delete post</a>
+      <a class="btn btn-outline-info ml-1"
+         href="{% url 'core:post_update' slug=post.slug %}">Update post</a>
+    </div>
+  {% endif %}
+
   <hr/>
 
   <h3>Add Comment</h3>

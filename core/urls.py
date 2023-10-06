@@ -6,7 +6,9 @@ from core.views import (
     SignUpView,
     reply_view,
     PostCreateView,
-    ProfileDetailView, PostUpdateView
+    ProfileDetailView,
+    PostUpdateView,
+    PostDeleteView
 )
 
 urlpatterns = [
@@ -17,6 +19,7 @@ urlpatterns = [
     path("/comment/reply/", reply_view, name="reply"),
     path("<slug:post>/", post_detail, name="post_detail"),
     path("<slug:slug>/update/", PostUpdateView.as_view(), name="post_update"),
+    path("<slug:slug>/delete/", PostDeleteView.as_view(), name="post_delete"),
     path("tag/<slug:tag_slug>/", PostListView.as_view(), name='post_tag'),
     path("user/<int:pk>/", PostListView.as_view(), name='post_user')
 ]

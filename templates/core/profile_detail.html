@@ -67,42 +67,39 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-10">
-            <div class="card mb-4 mb-md-0">
-              <div class="card-body">
-                <p class="mb-4">Manage profile
-                </p>
+        {% if request.user.id == user.id %}
+          <div class="card mb-4">
 
-                <div class="row mb-3">
-                  <div class="col-sm-9">
-                    <a class="btn btn-rounded btn-outline-dark rounded-pill"
-                       href="#">Update</a>
+                <div class="card-body">
+                  <p class="mb-4">Manage profile
+                  </p>
+
+                  <div class="row mb-3">
+                    <div class="col-sm-9">
+                      <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
+                         href="#">Update</a>
+                    </div>
                   </div>
+
+                  <div class="row mb-3">
+                    <div class="col-sm-9">
+                      <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
+                         href="#">Delete</a>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-sm-9">
+                      <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
+                         href="{% url 'core:post_user' user.profile.id %}">Posts</a>
+                    </div>
+                  </div>
+
                 </div>
 
-                <div class="row mb-3">
-                  <div class="col-sm-9">
-                    <a class="btn btn-rounded btn-outline-dark rounded-pill"
-                       href="#">Delete</a>
-                  </div>
-                </div>
-
-                <div class="row mb-3">
-                  <div class="col-sm-9">
-                    <a class="btn btn-rounded btn-outline-dark rounded-pill"
-                       href="{% url 'core:post_user' user.profile.id %}">Posts</a>
-                  </div>
-                </div>
-
-              </div>
-            </div>
           </div>
-        </div>
-
+        {% endif %}
       </div>
-
-
   </section>
 
 {% endblock %}
