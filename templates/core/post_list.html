@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
+  <div class="d-flex d-row justify-content-center mb-3">
+    <h4>Popular tags:</h4>
+    {% for tag in tag_list %}
+      <a class="btn btn-outline-dark rounded-pill mx-2 py-1"
+         href="{% url 'core:post_tag' tag.slug %}">{{ tag.name }}</a>
+    {% endfor %}
+  </div>
   {% for post in post_list %}
+
     <div class="card mb-3">
+
       <div class="card-body">
         <div class="row g-0">
           <div class="col-md-5">

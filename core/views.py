@@ -1,28 +1,43 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from taggit.models import Tag
 
-from core.forms import CommentForm, SignUpForm, PostForm
+from core.forms import CommentForm, SignUpForm, PostForm, PostSearchForm
 from core.models import Post, Comment, Profile
 
 
 class PostListView(LoginRequiredMixin, generic.ListView):
     model = Post
-    queryset = Post.published.all()
+    queryset = Post.published.prefetch_related("tags").select_related("author", "author__user")
     paginate_by = 3
 
-    def get_queryset(self):
-        if search := self.request.GET.get("search", ""):
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = self.request.GET.get("title", "")
+        context["search_form"] = PostSearchForm(
+            initial={"title": title}
+        )
+        tag_list = Tag.objects.annotate(
+            post_count=Count('taggit_taggeditem_items')
+        ).order_by("-post_count")[:5]
+        context["tag_list"] = tag_list
+        return context
+
+    def get_queryset(self, *args, **kwargs):
+        if search := self.request.GET.get("title", ""):
             self.queryset = self.queryset.filter(title__icontains=search)
 
-        if tag := self.request.GET.get("tag_slug", ""):
-            self.queryset = self.queryset.filter(tags__in=[tag])
+        if tag := self.kwargs.get("tag_slug", ""):
+            print(tag)
+            self.queryset = self.queryset.filter(tags__name__in=[tag])
 
-        if user_id := self.request.GET.get("pk", ""):
-            self.queryset = self.queryset.filter(user__profile__id=["pk"])
+        if pk := self.request.GET.get("pk", ""):
+            self.queryset = self.queryset.filter(user__profile__id=pk)
 
         return self.queryset
 
@@ -85,7 +100,7 @@ class SignUpView(generic.CreateView):
     template_name = "registration/signup.html"
 
 
-class PostCreateView(generic.CreateView):
+class PostCreateView(LoginRequiredMixin, generic.CreateView):
     model = Post
     form_class = PostForm
     template_name = "core/post_form.html"
