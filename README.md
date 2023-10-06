@@ -28,4 +28,4 @@ python manage.py loaddata data.json
 python manage.py runserver
 ``` 
 ### Demo
-![img.png](img.png))
+![img.png](img.png)
