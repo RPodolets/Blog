@@ -40,11 +40,17 @@ class PostSearchForm(forms.Form):
 
 
 class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ("title", "image", "content", "tags", "status")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = False
 
-    class Meta:
-        model = Post
-        fields = ("title", "image", "content", "tags", "status")
-        # fields = "__all__"
+    def clean_title(self):
+        title = self.cleaned_data['title']
+
+        if Post.objects.filter(title=title).exists():
+            raise forms.ValidationError('A post with that title already exists.')
+        return title
