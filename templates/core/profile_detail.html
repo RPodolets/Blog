@@ -6,9 +6,9 @@
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
-            {% if user.profile.image %}
-              <img src="{{ user.profile.image.url }}" alt="avatar"
-                   class="rounded-circle img-fluid" style="width: 150px;">
+            {% if user.profile.profile_pic %}
+              <img src="{{ user.profile.profile_pic.url }}" alt="avatar"
+                   class="rounded img-fluid" style="width: 150px;">
             {% else %}
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                    class="rounded-circle img-fluid" style="width: 150px;">
@@ -77,23 +77,24 @@
                   <div class="row mb-3">
                     <div class="col-sm-9">
                       <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
-                         href="#">Update</a>
+                         href="{% url 'core:post_user' pk=user.profile.id %}">All posts</a>
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <div class="col-sm-9">
-                      <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
-                         href="#">Delete</a>
+                      <a class="btn btn-rounded btn-outline-secondary rounded-pill w-25"
+                         href="{% url 'core:profile_update' pk=profile.id %}">Update</a>
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <div class="col-sm-9">
-                      <a class="btn btn-rounded btn-outline-dark rounded-pill w-25"
-                         href="{% url 'core:post_user' user.profile.id %}">Posts</a>
+                      <a class="btn btn-rounded btn-outline-danger rounded-pill w-25"
+                         href="{% url 'core:profile_delete' pk=profile.id %}">Delete</a>
                     </div>
                   </div>
+
 
                 </div>
 

@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from taggit.models import Tag
 
-from core.forms import CommentForm, SignUpForm, PostForm, PostSearchForm
+from core.forms import CommentForm, SignUpForm, PostForm, PostSearchForm, ProfileForm
 from core.models import Post, Comment, Profile
 
 
@@ -23,7 +23,7 @@ class PostListView(LoginRequiredMixin, generic.ListView):
             initial={"title": title}
         )
         tag_list = Tag.objects.annotate(
-            post_count=Count('taggit_taggeditem_items')
+            post_count=Count("taggit_taggeditem_items")
         ).order_by("-post_count")[:5]
         context["tag_list"] = tag_list
         return context
@@ -45,7 +45,7 @@ class PostListView(LoginRequiredMixin, generic.ListView):
         return self.queryset
 
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def post_detail(request: HttpRequest, post: str) -> HttpResponse:
     post = get_object_or_404(Post, slug=post)
 
@@ -59,43 +59,43 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
     comment_form = CommentForm()
     new_comment = None
 
-    if request.method == 'POST':
+    if request.method == "POST":
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
             new_comment.user = Profile.objects.get(user__id=request.user.id)
             new_comment.post = post
             new_comment.save()
-            return redirect(post.get_absolute_url() + '#' + str(new_comment.id))
+            return redirect(post.get_absolute_url() + "#" + str(new_comment.id))
 
     return render(
         request,
-        'core/post_detail.html',
+        "core/post_detail.html",
         {
-            'post': post,
-            'comments': comments,
+            "post": post,
+            "comments": comments,
             "new_comment": new_comment,
-            'comment_form': comment_form
+            "comment_form": comment_form
         }
     )
 
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def reply_view(request):
     if request.method == "POST":
         form = CommentForm(request.POST)
 
         if form.is_valid():
-            post_id = request.POST.get('post_id')
-            post_url = request.POST.get('post_url')
-            parent_id = request.POST.get('parent')
+            post_id = request.POST.get("post_id")
+            post_url = request.POST.get("post_url")
+            parent_id = request.POST.get("parent")
             reply = form.save(commit=False)
 
             reply.user = Profile.objects.get(user__id=request.user.id)
             reply.post = Post(id=post_id)
             reply.parent = Comment(id=parent_id)
             reply.save()
-            return redirect(post_url + '#' + str(reply.id))
+            return redirect(post_url + "#" + str(reply.id))
 
     return redirect("/")
 
@@ -120,7 +120,6 @@ class PostCreateView(LoginRequiredMixin, generic.CreateView):
 class PostUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Post
     form_class = PostForm
-    template_name = "core/post_form.html"
     success_url = ""
 
     def get_object(self, queryset=None):
@@ -143,3 +142,54 @@ class PostDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class ProfileDetailView(LoginRequiredMixin, generic.DetailView):
     model = Profile
+
+
+class ProfileUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    success_url = ""
+
+    def get_object(self, queryset=None):
+        obj = super(ProfileUpdateView, self).get_object(queryset)
+        if obj.id != self.request.user.profile.id:
+            raise Http404("You don't own this object")
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileUpdateView, self).get_context_data(**kwargs)
+        user = self.request.user
+        print(context)
+        context["form"] = ProfileForm(
+            instance=self.request.user.profile,
+            initial={
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email
+            }
+        )
+        return context
+
+    def form_valid(self, form):
+        profile = form.save()
+        user = profile.user
+        user.username = form.cleaned_data["username"]
+        user.last_name = form.cleaned_data["last_name"]
+        user.first_name = form.cleaned_data["first_name"]
+        user.email = form.cleaned_data["email"]
+        user.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("core:profile_detail", kwargs={"pk": self.object.id})
+
+
+class ProfileDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Profile
+    success_url = ""
+
+    def get_object(self, queryset=None):
+        obj = super(ProfileDeleteView, self).get_object(queryset)
+        if obj.id != self.request.user.profile.id:
+            raise Http404("You don't own this object")
+        return obj
