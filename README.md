@@ -15,7 +15,7 @@ password: test_password
 * See similar posts on the post page
 * Uploading post with images
 
-### installation
+### installation on Windows
 ```
 git clone https://github.com/RPodolets/Blog.git
 cd Blog
@@ -26,6 +26,18 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata data.json
 python manage.py runserver
+``` 
+### installation on Mac (and linux)
+```
+git clone https://github.com/RPodolets/Blog.git
+cd Blog
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py loaddata data.json
+python manage.py runserver  
 ``` 
 ### Demo
 ![img.png](img.png)
