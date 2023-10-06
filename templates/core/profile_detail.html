@@ -10,7 +10,8 @@
               <img src="{{ user.profile.profile_pic.url }}" alt="avatar"
                    class="rounded img-fluid" style="width: 150px;">
             {% else %}
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+              {% load static %}
+              <img src="{% static 'img/default_profile_image.png' %}" alt="avatar"
                    class="rounded-circle img-fluid" style="width: 150px;">
             {% endif %}
             <h5 class="my-3">{{ user.username }}</h5>
