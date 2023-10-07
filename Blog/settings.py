@@ -37,7 +37,14 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "taggit",
+    "storages",
 ]
+
+AWS_ACCESS_KEY_ID = "AKIARSYAFXWSOE5WX5WC"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "bloggy-bucket"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_DEFAULT_ACL = "public-read"
 
 TAGGIT_CASE_INSENSITIVE = True
 
@@ -135,9 +142,15 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = "staticfiles/"
 
-MEDIA_URL = "/media/"
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-MEDIA_ROOT = BASE_DIR / "media/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
+MEDIA_ROOT = ""
+
+# MEDIA_URL = "/media/"
+# 
+# MEDIA_ROOT = BASE_DIR / "media/"
 
 LOGIN_REDIRECT_URL = "/"
 
