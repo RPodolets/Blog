@@ -17,6 +17,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
 
 ALLOWED_HOSTS = [
+    "bloggy-7uor.onrender.com",
     "127.0.0.1",
 ]
 
