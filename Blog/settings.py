@@ -148,10 +148,6 @@ MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 MEDIA_ROOT = ""
 
-# MEDIA_URL = "/media/"
-# 
-# MEDIA_ROOT = BASE_DIR / "media/"
-
 LOGIN_REDIRECT_URL = "/"
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
