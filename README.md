@@ -1,6 +1,10 @@
 # Bloggy
 
 This is simple django blog app with basic functions like:
+
+### Check it out!
+[Bloggy project deployed to Render](https://bloggy-7uor.onrender.com/)
+
 ### Test user
 ```
 username: test_user
