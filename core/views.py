@@ -163,7 +163,6 @@ class ProfileUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProfileUpdateView, self).get_context_data(**kwargs)
         user = self.request.user
-        print(context)
         context["form"] = ProfileForm(
             instance=self.request.user.profile,
             initial={
