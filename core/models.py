@@ -11,8 +11,8 @@ from django.template.defaultfilters import slugify
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        queryset = super().get_queryset().filter(status="published")
-        return queryset.prefetch_related("tags").select_related("author", "author__user")
+        queryset = super().get_queryset().prefetch_related("tags").select_related("author", "author__user")
+        return queryset.filter(status="published")
 
 
 class Profile(models.Model):
@@ -89,4 +89,4 @@ class Comment(models.Model):
         return self.body
 
     def get_comments(self):
-        return Comment.objects.filter(parent=self).prefetch_related("profile").filter(active=True)
+        return Comment.objects.filter(parent=self).prefetch_related("user").filter(active=True)
