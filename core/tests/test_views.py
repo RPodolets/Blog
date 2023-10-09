@@ -170,3 +170,39 @@ class PostUpdateDeleteViewTest(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+
+
+class ReplyViewTest(TestCase):
+    def setUpTestData(self):
+        self.user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+
+        self.post = Post.objects.create(
+            title='Test Post',
+            author=self.user.profile,
+            status='published',
+        )
+
+        self.comment = Comment.objects.create(
+            post=self.post,
+            user=self.user.profile,
+            body='Test Comment',
+        )
+
+    def test_reply_view_post_request(self):
+        self.client.login(username="testuser", password="testpassword")
+
+        url = reverse("core:reply")
+        post_data = {
+            "body": "Reply to Test Comment",
+            "post_id": self.post.id,
+            "parent": self.comment.id,
+            "post_url": self.post.get_absolute_url()
+        }
+        response = self.client.post(url, data=post_data)
+
+        expected_url = f"{self.post.get_absolute_url()}#{self.comment.id + 1}"
+        self.assertRedirects(response, expected_url)
+
+        self.assertTrue(Comment.objects.filter(body="Reply to Test Comment").exists())
