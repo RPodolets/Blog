@@ -3,25 +3,16 @@ from pathlib import Path
 
 import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
-# SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
-
 
 ALLOWED_HOSTS = [
     "bloggy-7uor.onrender.com",
     "127.0.0.1",
 ]
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -89,21 +80,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Blog.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES["default"].update(db_from_env)
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -120,9 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -130,9 +109,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
 
@@ -151,9 +127,6 @@ MEDIA_ROOT = ""
 LOGIN_REDIRECT_URL = "/"
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -184,32 +157,22 @@ CKEDITOR_CONFIGS = {
             {"name": "colors", "items": ["TextColor", "BGColor"]},
             {"name": "tools", "items": ["Maximize", "ShowBlocks"]},
             {"name": "about", "items": ["About"]},
-            "/",  # put this to force next toolbar on new line
+            "/",
             {"name": "yourcustomtools", "items": [
-                # put the name of your editor.ui.addButton here
                 "Preview",
                 "Maximize",
 
             ]},
         ],
-        "toolbar": "YourCustomToolbarConfig",  # put selected toolbar config here
-        # "toolbarGroups": [{ "name": "document", "groups": [ "mode", "document", "doctools" ] }],
-        # "height": 291,
-        # "width": "100%",
-        # "filebrowserWindowHeight": 725,
-        # "filebrowserWindowWidth": 940,
-        # "toolbarCanCollapse": True,
-        # "mathJaxLib": "//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML",
+        "toolbar": "YourCustomToolbarConfig",
         "tabSpaces": 4,
         "extraPlugins": ",".join([
-            "uploadimage",  # the upload image feature
-            # your extra plugins here
+            "uploadimage",
             "div",
             "autolink",
             "autoembed",
             "embedsemantic",
             "autogrow",
-            # "devtools",
             "widget",
             "lineutils",
             "clipboard",

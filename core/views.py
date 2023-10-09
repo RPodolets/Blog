@@ -5,10 +5,17 @@ from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+
 from taggit.models import Tag
 
-from core.forms import CommentForm, SignUpForm, PostForm, PostSearchForm, ProfileForm
 from core.models import Post, Comment, Profile
+from core.forms import (
+    CommentForm,
+    SignUpForm,
+    PostForm,
+    PostSearchForm,
+    ProfileForm
+)
 
 
 class PostListView(LoginRequiredMixin, generic.ListView):
@@ -71,7 +78,7 @@ def post_detail(request: HttpRequest, post: str) -> HttpResponse:
     post_tags_ids = post.tags.values_list("id", flat=True)
     similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
     similar_posts = similar_posts.annotate(same_tags=Count("tags")).order_by("-same_tags", "-publish")[:3]
-    
+
     return render(
         request,
         "core/post_detail.html",

@@ -1,10 +1,10 @@
 from django.urls import path
 
 from core.views import (
-    post_detail,
-    PostListView,
     SignUpView,
     reply_view,
+    PostListView,
+    post_detail,
     PostCreateView,
     PostUpdateView,
     PostDeleteView,

@@ -1,6 +1,11 @@
 # Bloggy
 
 This is simple django blog app with basic functions like:
+* Signup / Login system
+* Comment system
+* Posting own articles with images
+* Manage own posts
+* Searching posts by tags and titles
 
 ### Check it out!
 [Bloggy project deployed to Render](https://bloggy-7uor.onrender.com/)
@@ -23,10 +28,9 @@ password: test_password
 ```
 git clone https://github.com/RPodolets/Blog.git
 cd Blog
-python venv venv
+python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata data.json
 python manage.py runserver
@@ -38,7 +42,6 @@ cd Blog
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata data.json
 python manage.py runserver  
