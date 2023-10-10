@@ -77,7 +77,7 @@
     </h3>
   {% endwith %}
 
-  {% if not post.comments.get_comments %}
+  {% if post.comments.get_comments %}
     No comments yet
   {% else %}
     {% for comment in post.get_comments %}
